@@ -1,0 +1,20 @@
+[project]
+name = "data-designer-lambda-column"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "jmarcos", email = "jmarcosdo@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "data-designer",
+    "pandas",
+]
+
+[project.entry-points."data_designer.plugins"]
+lambda-column = "data_designer_lambda_column.plugin:plugin"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

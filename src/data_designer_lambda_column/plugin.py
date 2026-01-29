@@ -1,5 +1,5 @@
 import logging
-from typing import Literal
+from typing import Literal, List, Dict
 import pandas as pd
 from data_designer.config.column_configs import SingleColumnConfig
 from data_designer.engine.column_generators.generators.base import ColumnGeneratorFullColumn
@@ -25,6 +25,10 @@ class LambdaColumnConfig(SingleColumnConfig):
     column_function: callable = Field(default=None, exclude=True)
     # Optional operation type
     operation_type: Literal["row","full"] = "row"
+    # Optional list of arguments to pass to the function
+    arguments: List[str] = []
+    # Optional list of keyword arguments to pass to the function
+    keyword_arguments: Dict = {}
     
     @property
     def required_columns(self) -> list[str]:
@@ -51,9 +55,9 @@ class LambdaColumnGenerator(ColumnGeneratorFullColumn[LambdaColumnConfig]):
         
         try:
             if self.config.operation_type == "row":
-                data[self.config.name] = data.apply(self.config.column_function, axis=1)
+                data[self.config.name] = data.apply(self.config.column_function, axis=1, args=self.config.arguments, **self.config.keyword_arguments)
             elif self.config.operation_type == "full":
-                data = self.config.column_function(data)
+                data = self.config.column_function(data, *self.config.arguments, **self.config.keyword_arguments)
 
             assert self.config.name in data.columns, f"Column {self.config.name} not found in DataFrame"
         except Exception as e:

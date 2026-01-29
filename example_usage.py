@@ -52,13 +52,13 @@ def main():
         LLMStructuredColumnConfig(
             name="greetings_data",
             output_format=GreetingsResponse,
-            prompt="Create {count} distinct greetings in different languages",
+            prompt="Create {{count}} distinct greetings in different languages",
             model_alias=MODEL_ALIAS,
         )
     )
 
     # 4. Define transformation to extract and explode the list
-    def explode_greetings(data):
+    def explode_greetings(data, drop_temp=False):
         # data['greetings_data'] contains the GreetingsResponse objects (or dicts).
         # We first extract the specific list field.
         # Note: Depending on data_designer version, this might be a dict or object.
@@ -78,6 +78,9 @@ def main():
         
         # Assign to the target column name expected by LambdaColumnConfig
         expanded_data["greetings_expanded"] = expanded_data["temp_greetings_list"]
+
+        if drop_temp:
+            expanded_data.drop(columns=["temp_greetings_list"], inplace=True)
         
         return expanded_data
 
@@ -88,7 +91,8 @@ def main():
             # We depend on the generated 'greetings_data' column
             required_cols=["greetings_data"],
             operation_type="full",
-            column_function=explode_greetings
+            column_function=explode_greetings,
+            keyword_arguments={"drop_temp": True}
         )
     )
 

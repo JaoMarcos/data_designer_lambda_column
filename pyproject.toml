@@ -1,7 +1,7 @@
 [project]
 name = "data-designer-lambda-column"
 version = "0.1.0"
-description = "Add your description here"
+description = "A data-designer plugin for creating columns via custom Python functions"
 readme = "README.md"
 authors = [
     { name = "jmarcos", email = "jmarcosdo@gmail.com" }
